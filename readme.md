@@ -38,3 +38,5 @@ Entity ID,Component ID
 - To get help on using the program `connected-component.exe -h`
 
 - Run the executable `connected-component.exe -input <input file> -output <output file> -delimiter <delimiter>`
+
+- To see a demo: `./connected-component.exe -input ./demo/edges.csv -output ./demo/results.csv -delimiter ,`
