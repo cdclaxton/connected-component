@@ -202,6 +202,12 @@ func calculateConnectedComponents(
 	outputFilepath string,
 	outputDelimiter string) {
 
+	// Display a summary of the running parameters
+	fmt.Printf("[>] Parameters\n")
+	fmt.Printf("    Input file:            %v\n", inputFilepath)
+	fmt.Printf("    Output file:           %v\n", outputFilepath)
+	fmt.Printf("    Output file delimiter: %v\n", outputDelimiter)
+
 	// Read the network into an in-memory data structure
 	t0 := time.Now()
 	edges := readEntityPairsFromFile(inputFilepath)
@@ -216,6 +222,7 @@ func calculateConnectedComponents(
 
 	// Write the connected components to a file
 	t2 := time.Now()
+	fmt.Printf("[>] Writing results to file %v\n", outputFilepath)
 	writeVertexToConnectedComponentToFile(vertexToConnectedComponent, outputFilepath, outputDelimiter)
 	fmt.Printf("[>] Vertex to connected component mapping written in %v\n", time.Now().Sub(t2))
 
