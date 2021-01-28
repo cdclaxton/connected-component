@@ -44,14 +44,19 @@ func TestConnectedComponentsOneComponent(t *testing.T) {
 			EntityID2: "e-2",
 		},
 	}
-	actual := connectedComponents(&entityPairs)
+	actual, actualNumComponents := connectedComponents(&entityPairs)
 	expected := map[string]int{
 		"e-1": 0,
 		"e-2": 0,
 	}
+	expectedNumComponents := 1
 
 	if !reflect.DeepEqual(expected, *actual) {
 		t.Fatalf("Expected %v, got %v\n", expected, actual)
+	}
+
+	if expectedNumComponents != actualNumComponents {
+		t.Fatalf("Expected %v components, got %v\n", expectedNumComponents, actualNumComponents)
 	}
 }
 
@@ -66,15 +71,20 @@ func TestConnectedComponentsOneComponent2(t *testing.T) {
 			EntityID2: "e-3",
 		},
 	}
-	actual := connectedComponents(&entityPairs)
+	actual, actualNumComponents := connectedComponents(&entityPairs)
 	expected := map[string]int{
 		"e-1": 0,
 		"e-2": 0,
 		"e-3": 0,
 	}
+	expectedNumComponents := 1
 
 	if !reflect.DeepEqual(expected, *actual) {
 		t.Fatalf("Expected %v, got %v\n", expected, actual)
+	}
+
+	if expectedNumComponents != actualNumComponents {
+		t.Fatalf("Expected %v components, got %v\n", expectedNumComponents, actualNumComponents)
 	}
 }
 
@@ -89,16 +99,21 @@ func TestConnectedComponentsTwoComponents(t *testing.T) {
 			EntityID2: "e-4",
 		},
 	}
-	actual := connectedComponents(&entityPairs)
+	actual, actualNumComponents := connectedComponents(&entityPairs)
 	expected := map[string]int{
 		"e-1": 0,
 		"e-2": 0,
 		"e-3": 1,
 		"e-4": 1,
 	}
+	expectedNumComponents := 2
 
 	if !reflect.DeepEqual(expected, *actual) {
 		t.Fatalf("Expected %v, got %v\n", expected, actual)
+	}
+
+	if expectedNumComponents != actualNumComponents {
+		t.Fatalf("Expected %v components, got %v\n", expectedNumComponents, actualNumComponents)
 	}
 }
 
@@ -117,7 +132,7 @@ func TestConnectedComponentsTwoComponents2(t *testing.T) {
 			EntityID2: "e-5",
 		},
 	}
-	actual := connectedComponents(&entityPairs)
+	actual, actualNumComponents := connectedComponents(&entityPairs)
 	expected := map[string]int{
 		"e-1": 0,
 		"e-2": 0,
@@ -125,9 +140,14 @@ func TestConnectedComponentsTwoComponents2(t *testing.T) {
 		"e-4": 1,
 		"e-5": 0,
 	}
+	expectedNumComponents := 2
 
 	if !reflect.DeepEqual(expected, *actual) {
 		t.Fatalf("Expected %v, got %v\n", expected, actual)
+	}
+
+	if expectedNumComponents != actualNumComponents {
+		t.Fatalf("Expected %v components, got %v\n", expectedNumComponents, actualNumComponents)
 	}
 }
 
@@ -150,7 +170,7 @@ func TestConnectedComponentsTwoComponents3(t *testing.T) {
 			EntityID2: "e-6",
 		},
 	}
-	actual := connectedComponents(&entityPairs)
+	actual, actualNumComponents := connectedComponents(&entityPairs)
 	expected := map[string]int{
 		"e-1": 0,
 		"e-2": 0,
@@ -159,9 +179,14 @@ func TestConnectedComponentsTwoComponents3(t *testing.T) {
 		"e-5": 0,
 		"e-6": 0,
 	}
+	expectedNumComponents := 2
 
 	if !reflect.DeepEqual(expected, *actual) {
 		t.Fatalf("Expected %v, got %v\n", expected, actual)
+	}
+
+	if expectedNumComponents != actualNumComponents {
+		t.Fatalf("Expected %v components, got %v\n", expectedNumComponents, actualNumComponents)
 	}
 }
 

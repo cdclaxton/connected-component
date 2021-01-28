@@ -78,13 +78,16 @@ func minMax(v1 int, v2 int) (int, int) {
 }
 
 // connectedComponents calculates the connected components for a list of edges
-func connectedComponents(edges *[]EntityPair) *map[string]int {
+func connectedComponents(edges *[]EntityPair) (*map[string]int, int) {
 
 	// Initialise the map of vertex ID to the connected component ID
 	vertexToConnectedComponent := map[string]int{}
 
 	// Next connected component ID
 	nextConnectedComponentID := 0
+
+	// Number of connected components
+	numberConnectedComponents := 0
 
 	// Walk through each pair of entities
 	for _, pair := range *edges {
@@ -99,13 +102,14 @@ func connectedComponents(edges *[]EntityPair) *map[string]int {
 				continue
 			}
 
-			// Re-assign the highest connected component ID
+			// Re-assign the highest connected component ID to merge components
 			lowestCC, highestCC := minMax(cc1, cc2)
 			for entity, cc := range vertexToConnectedComponent {
 				if cc == highestCC {
 					vertexToConnectedComponent[entity] = lowestCC
 				}
 			}
+			numberConnectedComponents--
 
 		} else if !present1 && present2 {
 			// Only EntityID2 has been seen before
@@ -120,10 +124,11 @@ func connectedComponents(edges *[]EntityPair) *map[string]int {
 			vertexToConnectedComponent[pair.EntityID1] = nextConnectedComponentID
 			vertexToConnectedComponent[pair.EntityID2] = nextConnectedComponentID
 			nextConnectedComponentID++
+			numberConnectedComponents++
 		}
 	}
 
-	return &vertexToConnectedComponent
+	return &vertexToConnectedComponent, numberConnectedComponents
 }
 
 // resultsHeader builds the results file header
@@ -217,8 +222,9 @@ func calculateConnectedComponents(
 
 	// Calculate the connected components
 	t1 := time.Now()
-	vertexToConnectedComponent := connectedComponents(edges)
+	vertexToConnectedComponent, numberConnectedComponents := connectedComponents(edges)
 	fmt.Printf("[>] Connected components computed in %v\n", time.Now().Sub(t1))
+	fmt.Printf("[>] Found %v connected components\n", numberConnectedComponents)
 
 	// Write the connected components to a file
 	t2 := time.Now()
@@ -226,6 +232,7 @@ func calculateConnectedComponents(
 	writeVertexToConnectedComponentToFile(vertexToConnectedComponent, outputFilepath, outputDelimiter)
 	fmt.Printf("[>] Vertex to connected component mapping written in %v\n", time.Now().Sub(t2))
 
+	// Show the total execution time
 	fmt.Printf("[>] Total time taken: %v\n", time.Now().Sub(t0))
 }
 
