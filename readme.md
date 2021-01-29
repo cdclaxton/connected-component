@@ -16,8 +16,10 @@ The code takes an input CSV file of edge lists, e.g.
 
 ```
 1,2
+1,3
 2,3
-4,5
+2,4
+5,6
 ```
 
 and produces a CSV file with a specified delimiter, e.g.
@@ -27,9 +29,14 @@ Entity ID,Component ID
 1,0
 2,0
 3,0
-4,1
+4,0
 5,1
+6,1
 ```
+
+This is illustrated here:
+
+![](./images/example.png)
 
 ## Usage
 
