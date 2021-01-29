@@ -83,6 +83,9 @@ func connectedComponents(edges *[]EntityPair) (*map[string]int, int) {
 	// Initialise the map of vertex ID to the connected component ID
 	vertexToConnectedComponent := map[string]int{}
 
+	// Initialise the map of connected component ID to slice of vertex IDs
+	connectedComponentToVertices := map[int][]string{}
+
 	// Next connected component ID
 	nextConnectedComponentID := 0
 
@@ -92,6 +95,7 @@ func connectedComponents(edges *[]EntityPair) (*map[string]int, int) {
 	// Walk through each pair of entities
 	for _, pair := range *edges {
 
+		// Connected component IDs given the vertex IDs
 		cc1, present1 := vertexToConnectedComponent[pair.EntityID1]
 		cc2, present2 := vertexToConnectedComponent[pair.EntityID2]
 
@@ -99,30 +103,43 @@ func connectedComponents(edges *[]EntityPair) (*map[string]int, int) {
 			// Both vertices have been seen before
 
 			if cc1 == cc2 {
+				// Both vertices already belong to the same connected component
 				continue
 			}
 
-			// Re-assign the highest connected component ID to merge components
+			// Lowest and highest connected components numbers
 			lowestCC, highestCC := minMax(cc1, cc2)
-			for entity, cc := range vertexToConnectedComponent {
-				if cc == highestCC {
-					vertexToConnectedComponent[entity] = lowestCC
-				}
+
+			// Re-assign the highest connected component ID to merge components
+			verticesToReassign := connectedComponentToVertices[highestCC]
+
+			for _, vertex := range verticesToReassign {
+				vertexToConnectedComponent[vertex] = lowestCC
+				connectedComponentToVertices[lowestCC] = append(connectedComponentToVertices[lowestCC], vertex)
 			}
+
+			// Delete the now unused connected component
+			delete(connectedComponentToVertices, highestCC)
+
 			numberConnectedComponents--
 
 		} else if !present1 && present2 {
 			// Only EntityID2 has been seen before
 			vertexToConnectedComponent[pair.EntityID1] = cc2
+			connectedComponentToVertices[cc2] = append(connectedComponentToVertices[cc2], pair.EntityID1)
 
 		} else if present1 && !present2 {
 			// Only EntityID1 has been seen before
 			vertexToConnectedComponent[pair.EntityID2] = cc1
+			connectedComponentToVertices[cc1] = append(connectedComponentToVertices[cc1], pair.EntityID2)
 
 		} else {
 			// Neither entity has been seen before
 			vertexToConnectedComponent[pair.EntityID1] = nextConnectedComponentID
 			vertexToConnectedComponent[pair.EntityID2] = nextConnectedComponentID
+
+			connectedComponentToVertices[nextConnectedComponentID] = []string{pair.EntityID1, pair.EntityID2}
+
 			nextConnectedComponentID++
 			numberConnectedComponents++
 		}
