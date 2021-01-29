@@ -258,8 +258,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.71023011"
-     inkscape:cx="684.2258"
-     inkscape:cy="431.45127"
+     inkscape:cx="524.16281"
+     inkscape:cy="371.6591"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -688,12 +688,12 @@
        ry="9.1610022" />
     <text
        id="text1043-7-6"
-       y="287.64645"
+       y="285.00992"
        x="11.616324"
        style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#8b86c4;fill-opacity:1;stroke:none;stroke-width:0.26458332"
        xml:space="preserve"><tspan
          style="font-size:7.05555534px;fill:#8b86c4;fill-opacity:1;stroke-width:0.26458332"
-         y="287.64645"
+         y="285.00992"
          x="11.616324"
          id="tspan1041-3-3"
          sodipodi:role="line">Edge list</tspan></text>
@@ -775,17 +775,17 @@
            id="tspan1041-3-3-1"
            x="120.2133"
            y="218.83604"
-           style="font-size:7.05555534px;text-align:center;text-anchor:middle;fill:#8b86c4;fill-opacity:1;stroke-width:0.26458332">Connected</tspan><tspan
+           style="font-size:7.76111111px;text-align:center;text-anchor:middle;fill:#8b86c4;fill-opacity:1;stroke-width:0.26458332">Connected</tspan><tspan
            id="tspan1734"
            sodipodi:role="line"
            x="120.2133"
            y="232.06522"
-           style="font-size:7.05555534px;text-align:center;text-anchor:middle;fill:#8b86c4;fill-opacity:1;stroke-width:0.26458332">Component</tspan><tspan
+           style="font-size:7.76111111px;text-align:center;text-anchor:middle;fill:#8b86c4;fill-opacity:1;stroke-width:0.26458332">Component</tspan><tspan
            id="tspan1736"
            sodipodi:role="line"
            x="120.2133"
            y="245.29437"
-           style="font-size:7.05555534px;text-align:center;text-anchor:middle;fill:#8b86c4;fill-opacity:1;stroke-width:0.26458332">Calculator</tspan></text>
+           style="font-size:7.76111111px;text-align:center;text-anchor:middle;fill:#8b86c4;fill-opacity:1;stroke-width:0.26458332">Calculator</tspan></text>
     </g>
     <path
        style="fill:#c3879f;fill-opacity:0.25098039;stroke:#c3879f;stroke-width:1.065;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.25098039;marker-end:url(#Arrow2Mend)"
