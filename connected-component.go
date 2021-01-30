@@ -18,8 +18,88 @@ type EntityPair struct {
 	EntityID2 string
 }
 
-// readEntityPairsFromFile reads entity pairs from a CSV file
-func readEntityPairsFromFile(filepath string) *[]EntityPair {
+// ConnectedComponents holds the connected component assignments
+type ConnectedComponents struct {
+	vertexToConnectedComponent   map[string]int
+	connectedComponentToVertices map[int][]string
+	nextConnectedComponentID     int
+	numberConnectedComponents    int
+}
+
+// NewConnectedComponents sets up a new ConnectedComponents struct
+func NewConnectedComponents() ConnectedComponents {
+	return ConnectedComponents{
+		vertexToConnectedComponent:   map[string]int{},
+		connectedComponentToVertices: map[int][]string{},
+		nextConnectedComponentID:     0,
+		numberConnectedComponents:    0,
+	}
+}
+
+// minMax returns the (minimum, maximum) value of a pair of integers
+func minMax(v1 int, v2 int) (int, int) {
+	if v1 <= v2 {
+		return v1, v2
+	}
+	return v2, v1
+}
+
+// AddEdge adds an edge to the graph and causes the connected components to be updated
+func (c *ConnectedComponents) AddEdge(pair EntityPair) {
+
+	// Connected component IDs given the vertex IDs
+	cc1, present1 := c.vertexToConnectedComponent[pair.EntityID1]
+	cc2, present2 := c.vertexToConnectedComponent[pair.EntityID2]
+
+	if present1 && present2 {
+		// Both vertices have been seen before
+
+		if cc1 == cc2 {
+			// Both vertices already belong to the same connected component
+			return
+		}
+
+		// Lowest and highest connected components numbers
+		lowestCC, highestCC := minMax(cc1, cc2)
+
+		// Re-assign the highest connected component ID to merge components
+		verticesToReassign := c.connectedComponentToVertices[highestCC]
+
+		for _, vertex := range verticesToReassign {
+			c.vertexToConnectedComponent[vertex] = lowestCC
+			c.connectedComponentToVertices[lowestCC] = append(c.connectedComponentToVertices[lowestCC], vertex)
+		}
+
+		// Delete the now unused connected component
+		delete(c.connectedComponentToVertices, highestCC)
+
+		// There is now one fewer connected components due to the merge
+		c.numberConnectedComponents--
+
+	} else if !present1 && present2 {
+		// Only EntityID2 has been seen before
+		c.vertexToConnectedComponent[pair.EntityID1] = cc2
+		c.connectedComponentToVertices[cc2] = append(c.connectedComponentToVertices[cc2], pair.EntityID1)
+
+	} else if present1 && !present2 {
+		// Only EntityID1 has been seen before
+		c.vertexToConnectedComponent[pair.EntityID2] = cc1
+		c.connectedComponentToVertices[cc1] = append(c.connectedComponentToVertices[cc1], pair.EntityID2)
+
+	} else {
+		// Neither entity has been seen before, so add it to the same new connected component
+		c.vertexToConnectedComponent[pair.EntityID1] = c.nextConnectedComponentID
+		c.vertexToConnectedComponent[pair.EntityID2] = c.nextConnectedComponentID
+
+		c.connectedComponentToVertices[c.nextConnectedComponentID] = []string{pair.EntityID1, pair.EntityID2}
+
+		c.nextConnectedComponentID++
+		c.numberConnectedComponents++
+	}
+}
+
+// connectedComponentsFromFile determines the connected components from a file
+func connectedComponentsFromFile(filepath string) (int, *ConnectedComponents) {
 
 	fmt.Printf("[>] Reading graph from edge list file: %v\n", filepath)
 
@@ -30,15 +110,14 @@ func readEntityPairsFromFile(filepath string) *[]EntityPair {
 	}
 	defer file.Close()
 
-	// Initialise the slice of entity pairs
-	var edges []EntityPair
+	// Instantiate the connected components data structure
+	cc := NewConnectedComponents()
 
 	// Parse the input file
 	r := csv.NewReader(file)
 	numRowsRead := 0
 
 	for {
-
 		// Read a row from the file
 		row, err := r.Read()
 		numRowsRead++
@@ -60,92 +139,12 @@ func readEntityPairsFromFile(filepath string) *[]EntityPair {
 			EntityID2: row[1],
 		}
 
-		edges = append(edges, entityPair)
+		cc.AddEdge(entityPair)
 	}
 
 	fmt.Printf("[>] Read %v rows from file %v\n", numRowsRead, filepath)
 
-	// Return a pointer to the slice of entity pairs
-	return &edges
-}
-
-// minMax returns the (minimum, maximum) value of a pair of integers
-func minMax(v1 int, v2 int) (int, int) {
-	if v1 <= v2 {
-		return v1, v2
-	}
-	return v2, v1
-}
-
-// connectedComponents calculates the connected components for a list of edges
-func connectedComponents(edges *[]EntityPair) (*map[string]int, int) {
-
-	// Initialise the map of vertex ID to the connected component ID
-	vertexToConnectedComponent := map[string]int{}
-
-	// Initialise the map of connected component ID to slice of vertex IDs
-	connectedComponentToVertices := map[int][]string{}
-
-	// Next connected component ID
-	nextConnectedComponentID := 0
-
-	// Number of connected components
-	numberConnectedComponents := 0
-
-	// Walk through each pair of entities
-	for _, pair := range *edges {
-
-		// Connected component IDs given the vertex IDs
-		cc1, present1 := vertexToConnectedComponent[pair.EntityID1]
-		cc2, present2 := vertexToConnectedComponent[pair.EntityID2]
-
-		if present1 && present2 {
-			// Both vertices have been seen before
-
-			if cc1 == cc2 {
-				// Both vertices already belong to the same connected component
-				continue
-			}
-
-			// Lowest and highest connected components numbers
-			lowestCC, highestCC := minMax(cc1, cc2)
-
-			// Re-assign the highest connected component ID to merge components
-			verticesToReassign := connectedComponentToVertices[highestCC]
-
-			for _, vertex := range verticesToReassign {
-				vertexToConnectedComponent[vertex] = lowestCC
-				connectedComponentToVertices[lowestCC] = append(connectedComponentToVertices[lowestCC], vertex)
-			}
-
-			// Delete the now unused connected component
-			delete(connectedComponentToVertices, highestCC)
-
-			numberConnectedComponents--
-
-		} else if !present1 && present2 {
-			// Only EntityID2 has been seen before
-			vertexToConnectedComponent[pair.EntityID1] = cc2
-			connectedComponentToVertices[cc2] = append(connectedComponentToVertices[cc2], pair.EntityID1)
-
-		} else if present1 && !present2 {
-			// Only EntityID1 has been seen before
-			vertexToConnectedComponent[pair.EntityID2] = cc1
-			connectedComponentToVertices[cc1] = append(connectedComponentToVertices[cc1], pair.EntityID2)
-
-		} else {
-			// Neither entity has been seen before
-			vertexToConnectedComponent[pair.EntityID1] = nextConnectedComponentID
-			vertexToConnectedComponent[pair.EntityID2] = nextConnectedComponentID
-
-			connectedComponentToVertices[nextConnectedComponentID] = []string{pair.EntityID1, pair.EntityID2}
-
-			nextConnectedComponentID++
-			numberConnectedComponents++
-		}
-	}
-
-	return &vertexToConnectedComponent, numberConnectedComponents
+	return numRowsRead, &cc
 }
 
 // resultsHeader builds the results file header
@@ -230,24 +229,16 @@ func calculateConnectedComponents(
 	fmt.Printf("    Output file:           %v\n", outputFilepath)
 	fmt.Printf("    Output file delimiter: %v\n", outputDelimiter)
 
-	// Read the network into an in-memory data structure
+	// Read the network and calculate the connected components
 	t0 := time.Now()
-	edges := readEntityPairsFromFile(inputFilepath)
-
-	fmt.Printf("[>] Read %v edges from file %v\n", len(*edges), inputFilepath)
-	fmt.Printf("[>] Edges read in %v\n", time.Now().Sub(t0))
-
-	// Calculate the connected components
-	t1 := time.Now()
-	vertexToConnectedComponent, numberConnectedComponents := connectedComponents(edges)
-	fmt.Printf("[>] Connected components computed in %v\n", time.Now().Sub(t1))
-	fmt.Printf("[>] Found %v connected components\n", numberConnectedComponents)
+	_, cc := connectedComponentsFromFile(inputFilepath)
+	fmt.Printf("[>] Connected components computed in %v\n", time.Now().Sub(t0))
 
 	// Write the connected components to a file
-	t2 := time.Now()
+	t1 := time.Now()
 	fmt.Printf("[>] Writing results to file %v\n", outputFilepath)
-	writeVertexToConnectedComponentToFile(vertexToConnectedComponent, outputFilepath, outputDelimiter)
-	fmt.Printf("[>] Vertex to connected component mapping written in %v\n", time.Now().Sub(t2))
+	writeVertexToConnectedComponentToFile(&cc.vertexToConnectedComponent, outputFilepath, outputDelimiter)
+	fmt.Printf("[>] Vertex to connected component mapping written in %v\n", time.Now().Sub(t1))
 
 	// Show the total execution time
 	fmt.Printf("[>] Total time taken: %v\n", time.Now().Sub(t0))
