@@ -233,6 +233,7 @@ func calculateConnectedComponents(
 	t0 := time.Now()
 	_, cc := connectedComponentsFromFile(inputFilepath)
 	fmt.Printf("[>] Connected components computed in %v\n", time.Now().Sub(t0))
+	fmt.Printf("[>] Found %v connected components\n", cc.numberConnectedComponents)
 
 	// Write the connected components to a file
 	t1 := time.Now()
