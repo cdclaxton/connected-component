@@ -213,11 +213,20 @@ func writeVertexToConnectedComponentToFile(
 	fmt.Fprintln(outputFile, resultsHeader(delimiter))
 
 	// Get a slice of sorted vertices
+	fmt.Printf("[>] Sorting vertices ...\n")
 	sortedVertices := sortedListVertices(vertexToComponent)
 
 	// Write each vertex to its connected component
+	numberVerticesWritten := 0
 	for _, vertex := range *sortedVertices {
+
 		fmt.Fprintln(outputFile, buildResultsLine(vertex, (*vertexToComponent)[vertex], delimiter))
+
+		numberVerticesWritten++
+
+		if numberVerticesWritten%1000000 == 0 {
+			fmt.Printf("[>] Number of vertices written to file: %v\n", numberVerticesWritten)
+		}
 	}
 }
 
