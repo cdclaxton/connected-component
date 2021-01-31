@@ -122,6 +122,10 @@ func connectedComponentsFromFile(filepath string) (int, *ConnectedComponents) {
 		row, err := r.Read()
 		numRowsRead++
 
+		if numRowsRead%1000000 == 0 {
+			fmt.Printf("[>] Read %v rows\n", numRowsRead)
+		}
+
 		if err == io.EOF {
 			break
 		}
@@ -232,14 +236,14 @@ func calculateConnectedComponents(
 	// Read the network and calculate the connected components
 	t0 := time.Now()
 	_, cc := connectedComponentsFromFile(inputFilepath)
-	fmt.Printf("[>] Connected components computed in %v\n", time.Now().Sub(t0))
+	fmt.Printf("[>] Time taken to compute connected components: %v\n", time.Now().Sub(t0))
 	fmt.Printf("[>] Found %v connected components\n", cc.numberConnectedComponents)
 
 	// Write the connected components to a file
 	t1 := time.Now()
-	fmt.Printf("[>] Writing results to file %v\n", outputFilepath)
+	fmt.Printf("[>] Writing results to file %v ...\n", outputFilepath)
 	writeVertexToConnectedComponentToFile(&cc.vertexToConnectedComponent, outputFilepath, outputDelimiter)
-	fmt.Printf("[>] Vertex to connected component mapping written in %v\n", time.Now().Sub(t1))
+	fmt.Printf("[>] Time taken to write vertex to connected component mapping: %v\n", time.Now().Sub(t1))
 
 	// Show the total execution time
 	fmt.Printf("[>] Total time taken: %v\n", time.Now().Sub(t0))
