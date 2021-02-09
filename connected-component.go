@@ -101,7 +101,7 @@ func (c *ConnectedComponents) AddEdge(pair EntityPair) {
 // connectedComponentsFromFile determines the connected components from a file
 func connectedComponentsFromFile(filepath string) (int, *ConnectedComponents) {
 
-	fmt.Printf("[>] Reading graph from edge list file: %v\n", filepath)
+	log.Printf("Reading graph from edge list file: %v\n", filepath)
 
 	// Open the file for reading and ensure it is closed
 	file, err := os.Open(filepath)
@@ -123,7 +123,7 @@ func connectedComponentsFromFile(filepath string) (int, *ConnectedComponents) {
 		numRowsRead++
 
 		if numRowsRead%1000000 == 0 {
-			fmt.Printf("[>] Read %v rows\n", numRowsRead)
+			log.Printf("Read %v rows\n", numRowsRead)
 		}
 
 		if err == io.EOF {
@@ -146,7 +146,7 @@ func connectedComponentsFromFile(filepath string) (int, *ConnectedComponents) {
 		cc.AddEdge(entityPair)
 	}
 
-	fmt.Printf("[>] Read %v rows from file %v\n", numRowsRead, filepath)
+	log.Printf("Read %v rows from file %v\n", numRowsRead, filepath)
 
 	return numRowsRead, &cc
 }
@@ -213,7 +213,7 @@ func writeVertexToConnectedComponentToFile(
 	fmt.Fprintln(outputFile, resultsHeader(delimiter))
 
 	// Get a slice of sorted vertices
-	fmt.Printf("[>] Sorting vertices ...\n")
+	log.Printf("Sorting vertices ...\n")
 	sortedVertices := sortedListVertices(vertexToComponent)
 
 	// Write each vertex to its connected component
@@ -225,7 +225,7 @@ func writeVertexToConnectedComponentToFile(
 		numberVerticesWritten++
 
 		if numberVerticesWritten%1000000 == 0 {
-			fmt.Printf("[>] Number of vertices written to file: %v\n", numberVerticesWritten)
+			log.Printf("Number of vertices written to file: %v\n", numberVerticesWritten)
 		}
 	}
 }
@@ -237,25 +237,24 @@ func calculateConnectedComponents(
 	outputDelimiter string) {
 
 	// Display a summary of the running parameters
-	fmt.Printf("[>] Parameters\n")
-	fmt.Printf("    Input file:            %v\n", inputFilepath)
-	fmt.Printf("    Output file:           %v\n", outputFilepath)
-	fmt.Printf("    Output file delimiter: %v\n", outputDelimiter)
+	log.Printf("Parameter - Input file:            %v\n", inputFilepath)
+	log.Printf("Parameter - Output file:           %v\n", outputFilepath)
+	log.Printf("Parameter - Output file delimiter: %v\n", outputDelimiter)
 
 	// Read the network and calculate the connected components
 	t0 := time.Now()
 	_, cc := connectedComponentsFromFile(inputFilepath)
-	fmt.Printf("[>] Time taken to compute connected components: %v\n", time.Now().Sub(t0))
-	fmt.Printf("[>] Found %v connected components\n", cc.numberConnectedComponents)
+	log.Printf("Time taken to compute connected components: %v\n", time.Now().Sub(t0))
+	log.Printf("Found %v connected components\n", cc.numberConnectedComponents)
 
 	// Write the connected components to a file
 	t1 := time.Now()
-	fmt.Printf("[>] Writing results to file %v ...\n", outputFilepath)
+	log.Printf("Writing results to file %v ...\n", outputFilepath)
 	writeVertexToConnectedComponentToFile(&cc.vertexToConnectedComponent, outputFilepath, outputDelimiter)
-	fmt.Printf("[>] Time taken to write vertex to connected component mapping: %v\n", time.Now().Sub(t1))
+	log.Printf("Time taken to write vertex to connected component mapping: %v\n", time.Now().Sub(t1))
 
 	// Show the total execution time
-	fmt.Printf("[>] Total time taken: %v\n", time.Now().Sub(t0))
+	log.Printf("Total time taken: %v\n", time.Now().Sub(t0))
 }
 
 func main() {
@@ -267,6 +266,6 @@ func main() {
 	flag.Parse()
 
 	// Calculate the connected components given the command line arguments
-	fmt.Println("Connected component calculator")
+	log.Println("Connected component calculator")
 	calculateConnectedComponents(*inputFilepath, *outputFilepath, *delimiter)
 }
